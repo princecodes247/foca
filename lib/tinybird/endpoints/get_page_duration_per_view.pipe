@@ -1,0 +1,18 @@
+VERSION 3
+
+NODE endpoint
+SQL >
+    %
+    SELECT
+        pageNumber,
+        SUM(duration) AS sum_duration
+    FROM
+        page_views__v2
+    WHERE
+        documentId = {{ String(documentId, required=True) }}
+        AND viewId = {{ String(viewId, required=True) }}
+        AND time >= {{ Int64(since, required=True) }}
+    GROUP BY
+        pageNumber
+    ORDER BY
+        pageNumber ASC
