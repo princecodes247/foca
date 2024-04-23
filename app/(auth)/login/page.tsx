@@ -150,18 +150,7 @@ export default function Login() {
               )}
               <span>Continue with LinkedIn</span>
             </Button>
-            <Button
-              onClick={() =>
-                signInWithPasskey({
-                  tenantId: process.env.NEXT_PUBLIC_HANKO_TENANT_ID as string,
-                })
-              }
-              variant="bordered"
-
-            >
-              <Passkey className="w-4 h-4 " />
-              <span>Continue with a passkey</span>
-            </Button>
+           
           </div>
         </div>
       </div>

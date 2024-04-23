@@ -4,10 +4,8 @@ import ms from "ms";
 import bcrypt from "bcryptjs";
 import { toast } from "sonner";
 import { customAlphabet } from "nanoid";
-import { ThreadMessage } from "openai/resources/beta/threads/messages/messages";
-import { Message } from "ai";
-import { upload } from "@vercel/blob/client";
 import crypto from "crypto";
+import { siteConfig } from "@/config/site";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -86,7 +84,7 @@ export function bytesToSize(bytes: number) {
   if (bytes === 0) return "n/a";
   const i = Math.floor(Math.log(bytes) / Math.log(1000));
   if (i === 0) return `${bytes} ${sizes[i]}`;
-  const sizeInCurrentUnit = bytes / Math.pow(1000, i);
+  const sizeInCurrentUnit = bytes / 1000 ** i;
   if (sizeInCurrentUnit >= 1000 && i < sizes.length - 1) {
     return `1 ${sizes[i + 1]}`;
   }
@@ -273,56 +271,11 @@ export const calculateDaysLeft = (accountCreationDate: Date): number => {
   return daysLeft(accountCreationDate, maxDays);
 };
 
-// helper function to convert ThreadMessages (an OpenAI type for messages) to Messages (an vercel/ai type for messages)
-export const convertThreadMessagesToMessages = (
-  threadMessages: ThreadMessage[],
-): Message[] => {
-  // Filter out messages with metaData.intitialMessage == 'True'
-  const filteredMessages = threadMessages.filter((threadMessage) => {
-    if (
-      typeof threadMessage.metadata === "object" &&
-      threadMessage.metadata !== null
-    ) {
-      // Safely typecast metadata to an object with the expected structure
-      const metadata = threadMessage.metadata as { intitialMessage?: string };
-      return metadata.intitialMessage !== "True";
-    }
-    return true; // Include messages where metadata is not an object or is null
-  });
 
-  return filteredMessages.map((threadMessage) => {
-    const {
-      id,
-      created_at,
-      content,
-      role,
-      // other fields you might need from ThreadMessage
-    } = threadMessage;
-
-    // Assuming content is an array and you want to convert it into a string or JSX element
-    const messageContent = content.map((item) => {
-      if (item.type === "text") {
-        return item.text.value;
-      } else {
-        return "";
-      }
-    });
-
-    return {
-      id,
-      createdAt: new Date(created_at * 1000), // converting Unix timestamp to Date object
-      content: messageContent[0],
-      role: role === "assistant" ? "assistant" : "user", // Adjust according to your needs
-      // Set other properties as required by Message interface
-      ui: null, // example, set based on your UI requirements
-      // name, function_call, and other fields as needed
-    };
-  });
-};
 
 export function constructMetadata({
-  title = "Papermark | The Open Source DocSend Alternative",
-  description = "Papermark is an open-source document sharing alternative to DocSend with built-in engagement analytics and 100% white-labeling.",
+  title = siteConfig.name,
+  description = siteConfig.description,
   image = "https://www.papermark.io/_static/meta-image.png",
   favicon = "/favicon.ico",
   noIndex = false,
@@ -369,12 +322,12 @@ export const convertDataUrlToFile = ({
   dataUrl: string;
   filename?: string;
 }) => {
-  let arr = dataUrl.split(","),
-    match = arr[0].match(/:(.*?);/),
-    mime = match ? match[1] : "",
-    bstr = atob(arr[1]),
-    n = bstr.length,
-    u8arr = new Uint8Array(n);
+  const arr = dataUrl.split(",");
+  const match = arr[0].match(/:(.*?);/);
+  const mime = match ? match[1] : "";
+  const bstr = atob(arr[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
 
   while (n--) {
     u8arr[n] = bstr.charCodeAt(n);
@@ -390,14 +343,14 @@ export const convertDataUrlToFile = ({
   return new File([u8arr], filename, { type: mime });
 };
 
-export const uploadImage = async (file: File) => {
-  const newBlob = await upload(file.name, file, {
-    access: "public",
-    handleUploadUrl: "/api/file/logo-upload",
-  });
+// export const uploadImage = async (file: File) => {
+//   const newBlob = await upload(file.name, file, {
+//     access: "public",
+//     handleUploadUrl: "/api/file/logo-upload",
+//   });
 
-  return newBlob.url;
-};
+//   return newBlob.url;
+// };
 
 /**
  * Generates a Gravatar hash for the given email.
