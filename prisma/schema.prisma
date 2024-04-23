@@ -99,8 +99,9 @@ model Team {
   startsAt       DateTime? // Stripe subscription start date
   endsAt         DateTime? // Stripe subscription end date
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  Invitation Invitation[]
 }
 
 model Brand {
@@ -159,4 +160,36 @@ model SentEmail {
   domainSlug String? // Domain that triggered the email. This can be nullable, representing emails not triggered by domains
 
   @@index([teamId])
+}
+
+model Domain {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  userId      String
+  teamId      String?
+  verified    Boolean  @default(false) // Whether the domain has been verified
+  lastChecked DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([teamId])
+}
+
+model Invitation {
+  email     String
+  expires   DateTime
+  teamId    String
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  token     String   @unique
+
+  @@unique([email, teamId])
+}
+
+model View {
+  id          String   @id @default(cuid())
+  viewerEmail String? // Email of the viewer if known
+  verified    Boolean  @default(false) // Whether the viewer email has been verified
+  viewedAt    DateTime @default(now())
 }

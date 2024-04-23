@@ -1,13 +1,16 @@
 
   import { AnimatePresence, motion, MotionConfig } from "framer-motion";
+import { ArrowDownSquare, ArrowRightSquareIcon, ChevronLeftIcon, ChevronRightIcon, CircleArrowUp, X } from "lucide-react";
   import Image from "next/image";
   import { useState } from "react";
+import Twitter from "./shared/icons/twitter";
   import { useSwipeable } from "react-swipeable";
-  import { variants } from "../utils/animationVariants";
-  import downloadPhoto from "../utils/downloadPhoto";
-  import { range } from "../utils/range";
-  import type { ImageProps, SharedModalProps } from "../utils/types";
-  import Twitter from "./Icons/Twitter";
+import downloadPhoto from "@/lib/utils/download-photo";
+  // import { variants } from "../utils/animationVariants";
+  // import downloadPhoto from "../utils/downloadPhoto";
+  // import { range } from "../utils/range";
+  // import type { ImageProps, SharedModalProps } from "../utils/types";
+  // import Twitter from "./Icons/Twitter";
   
   export default function SharedModal({
     index,
@@ -17,12 +20,16 @@
     navigation,
     currentPhoto,
     direction,
-  }: SharedModalProps) {
+  }: any) {
+  // }: SharedModalProps) {
     const [loaded, setLoaded] = useState(false);
   
-    let filteredImages = images?.filter((img: ImageProps) =>
-      range(index - 15, index + 15).includes(img.id),
+    let filteredImages = images?.filter((img: any) =>
+      0
     );
+    // let filteredImages = images?.filter((img: ImageProps) =>
+    //   range(index - 15, index + 15).includes(img.id),
+    // );
   
     const handlers = useSwipeable({
       onSwipedLeft: () => {
@@ -58,7 +65,7 @@
                 <motion.div
                   key={index}
                   custom={direction}
-                  variants={variants}
+                  // variants={variants}
                   initial="enter"
                   animate="center"
                   exit="exit"
@@ -90,6 +97,7 @@
                   <>
                     {index > 0 && (
                       <button
+                      type="button"
                         className="absolute left-3 top-[calc(50%-16px)] rounded-full bg-black/50 p-3 text-white/75 backdrop-blur-lg transition hover:bg-black/75 hover:text-white focus:outline-none"
                         style={{ transform: "translate3d(0, 0, 0)" }}
                         onClick={() => changePhotoId(index - 1)}
@@ -99,6 +107,7 @@
                     )}
                     {index + 1 < images.length && (
                       <button
+                      type="button"
                         className="absolute right-3 top-[calc(50%-16px)] rounded-full bg-black/50 p-3 text-white/75 backdrop-blur-lg transition hover:bg-black/75 hover:text-white focus:outline-none"
                         style={{ transform: "translate3d(0, 0, 0)" }}
                         onClick={() => changePhotoId(index + 1)}
@@ -117,7 +126,7 @@
                       title="Open fullsize version"
                       rel="noreferrer"
                     >
-                      <ArrowTopRightOnSquareIcon className="w-5 h-5" />
+                      <ArrowRightSquareIcon className="w-5 h-5" />
                     </a>
                   ) : (
                     <a
@@ -131,6 +140,7 @@
                     </a>
                   )}
                   <button
+                  type="button"
                     onClick={() =>
                       downloadPhoto(
                         `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/${currentImage.public_id}.${currentImage.format}`,
@@ -140,7 +150,7 @@
                     className="p-2 transition rounded-full bg-black/50 text-white/75 backdrop-blur-lg hover:bg-black/75 hover:text-white"
                     title="Download fullsize version"
                   >
-                    <ArrowDownTrayIcon className="w-5 h-5" />
+                    <ArrowDownSquare className="w-5 h-5" />
                   </button>
                 </div>
                 <div className="absolute top-0 left-0 flex items-center gap-2 p-3 text-white">
@@ -149,9 +159,9 @@
                     className="p-2 transition rounded-full bg-black/50 text-white/75 backdrop-blur-lg hover:bg-black/75 hover:text-white"
                   >
                     {navigation ? (
-                      <XMarkIcon className="w-5 h-5" />
+                      <X className="w-5 h-5" />
                     ) : (
-                      <ArrowUturnLeftIcon className="w-5 h-5" />
+                      <CircleArrowUp className="w-5 h-5" />
                     )}
                   </button>
                 </div>
@@ -165,7 +175,7 @@
                   className="mx-auto mt-6 mb-6 flex aspect-[3/2] h-14"
                 >
                   <AnimatePresence initial={false}>
-                    {filteredImages.map(({ public_id, format, id }) => (
+                    {filteredImages.map(({ public_id, format, id }: any) => (
                       <motion.button
                         initial={{
                           width: "0%",

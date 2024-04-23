@@ -1,22 +1,23 @@
 import Image from "next/image";
 import { useRouter } from "next/router";
-import useKeypress from "react-use-keypress";
-import type { ImageProps } from "../utils/types";
-import { useLastViewedPhoto } from "../utils/useLastViewedPhoto";
-import SharedModal from "./SharedModal";
+import SharedModal from "./shared-modal";
+// import useKeypress from "react-use-keypress";
+// import type { ImageProps } from "../utils/types";
+// import { useLastViewedPhoto } from "../utils/useLastViewedPhoto";
 
 export default function Carousel({
   index,
   currentPhoto,
 }: {
   index: number;
-  currentPhoto: ImageProps;
+  currentPhoto: any;
+  // currentPhoto: ImageProps;
 }) {
   const router = useRouter();
-  const [, setLastViewedPhoto] = useLastViewedPhoto();
+  // const [, setLastViewedPhoto] = useLastViewedPhoto();
 
   function closeModal() {
-    setLastViewedPhoto(currentPhoto.id);
+    // setLastViewedPhoto(currentPhoto.id);
     router.push("/", undefined, { shallow: true });
   }
 
@@ -24,9 +25,9 @@ export default function Carousel({
     return newVal;
   }
 
-  useKeypress("Escape", () => {
-    closeModal();
-  });
+  // useKeypress("Escape", () => {
+  //   closeModal();
+  // });
 
   return (
     <div className="fixed inset-0 flex items-center justify-center">

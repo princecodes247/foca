@@ -65,9 +65,9 @@ export default async function SingleGalleryPage({
         )} */}
       <section className="py-12">
         <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-          {[0, 0, 0, 0].map(({ id, public_id, format, blurDataUrl }) => (
+          {[0, 0, 0, 0].map((data, index) => (
             <Link
-              // key={id}
+              key={index}
               href={`/?photoId=${0}`}
               as={`/p/${0}`}
               // ref={id === Number(`lastViewedPhoto`) ? lastViewedPhotoRef : null}

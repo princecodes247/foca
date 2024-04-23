@@ -1,16 +1,24 @@
-import { Dialog } from "@headlessui/react";
+import {
+  Modal as BaseModal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  useDisclosure,
+} from "@nextui-org/modal";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 import { useRef, useState } from "react";
-import useKeypress from "react-use-keypress";
-import type { ImageProps } from "../utils/types";
-import SharedModal from "./SharedModal";
+// import useKeypress from "react-use-keypress";
+// import type { ImageProps } from "../utils/types";
+import SharedModal from "./shared-modal";
 
 export default function Modal({
   images,
   onClose,
 }: {
-  images: ImageProps[];
+  images: any[];
+  // images: ImageProps[];
   onClose?: () => void;
 }) {
   let overlayRef = useRef();
@@ -24,7 +32,7 @@ export default function Modal({
 
   function handleClose() {
     router.push("/", undefined, { shallow: true });
-    onClose();
+    // onClose();
   }
 
   function changePhotoId(newVal: number) {
@@ -39,38 +47,30 @@ export default function Modal({
         query: { photoId: newVal },
       },
       `/p/${newVal}`,
-      { shallow: true },
+      { shallow: true }
     );
   }
 
-  useKeypress("ArrowRight", () => {
-    if (index + 1 < images.length) {
-      changePhotoId(index + 1);
-    }
-  });
+  // useKeypress("ArrowRight", () => {
+  //   if (index + 1 < images.length) {
+  //     changePhotoId(index + 1);
+  //   }
+  // });
 
-  useKeypress("ArrowLeft", () => {
-    if (index > 0) {
-      changePhotoId(index - 1);
-    }
-  });
+  // useKeypress("ArrowLeft", () => {
+  //   if (index > 0) {
+  //     changePhotoId(index - 1);
+  //   }
+  // });
 
   return (
-    <Dialog
-      static
-      open={true}
+    <BaseModal
+      // open={true}
       onClose={handleClose}
-      initialFocus={overlayRef}
+      // initialFocus={overlayRef}
+      backdrop="blur"
       className="fixed inset-0 z-10 flex items-center justify-center"
     >
-      <Dialog.Overlay
-        ref={overlayRef}
-        as={motion.div}
-        key="backdrop"
-        className="fixed inset-0 z-30 bg-black/70 backdrop-blur-2xl"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-      />
       <SharedModal
         index={curIndex}
         direction={direction}
@@ -79,6 +79,6 @@ export default function Modal({
         closeModal={handleClose}
         navigation={true}
       />
-    </Dialog>
+    </BaseModal>
   );
 }

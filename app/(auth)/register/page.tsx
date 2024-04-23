@@ -1,10 +1,10 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { Input } from "@/components/ui/input";
+import { Input } from "@nextui-org/input";
+import { Button } from "@nextui-org/button";
 import { useState } from "react";
 import { toast } from "sonner";
 import LinkedIn from "@/components/shared/icons/linkedin";
@@ -15,9 +15,9 @@ export default function Register() {
   const [email, setEmail] = useState<string>("");
 
   return (
-    <div className="flex h-screen w-full justify-center">
+    <div className="flex justify-center w-full h-screen">
       <div
-        className="absolute inset-x-0 top-10 -z-10 flex transform-gpu justify-center overflow-hidden blur-3xl"
+        className="absolute inset-x-0 flex justify-center overflow-hidden top-10 -z-10 transform-gpu blur-3xl"
         aria-hidden="true"
       >
         <div
@@ -29,18 +29,18 @@ export default function Register() {
         />
       </div>
       <div className="z-10 mt-[calc(20vh)] h-fit w-full mx-5 sm:mx-0 max-w-md overflow-hidden border border-border bg-gray-50 dark:bg-gray-900 rounded-lg sm:shadow-xl">
-        <div className="flex flex-col items-center justify-center space-y-3 px-4 py-6 pt-8 text-center sm:px-16">
+        <div className="flex flex-col items-center justify-center px-4 py-6 pt-8 space-y-3 text-center sm:px-16">
           <Link href="/">
             <span className="text-xl font-bold tracking-tighter text-foreground">
               Papermark
             </span>
           </Link>
-          <h3 className="text-2xl text-foreground font-medium">
+          <h3 className="text-2xl font-medium text-foreground">
             Start sharing documents
           </h3>
         </div>
         <form
-          className="flex flex-col p-4 pt-8 sm:px-16 gap-4"
+          className="flex flex-col gap-4 p-4 pt-8 sm:px-16"
           onSubmit={(e) => {
             e.preventDefault();
             signIn("email", {
@@ -58,7 +58,7 @@ export default function Register() {
           }}
         >
           <Input
-            className=" border-4"
+            className="border-4 "
             placeholder="jsmith@company.co"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -66,21 +66,22 @@ export default function Register() {
           <Button type="submit">Continue with Email</Button>
         </form>
         <p className="text-center">or</p>
-        <div className="flex flex-col px-4 py-8 sm:px-16 space-y-2">
+        <div className="flex flex-col px-4 py-8 space-y-2 sm:px-16">
           <Button
             onClick={() => {
               signIn("google", {
                 ...(next && next.length > 0 ? { callbackUrl: next } : {}),
               });
             }}
-            className="flex justify-center items-center space-x-2"
+            className="flex items-center justify-center space-x-2"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 488 512"
               fill="currentColor"
-              className="h-4 w-4"
+              className="w-4 h-4"
             >
+              <title>Google</title>
               <path d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z" />
             </svg>
             <span>Continue with Google</span>
@@ -91,7 +92,7 @@ export default function Register() {
                 ...(next && next.length > 0 ? { callbackUrl: next } : {}),
               });
             }}
-            className="flex justify-center items-center space-x-2"
+            className="flex items-center justify-center space-x-2"
           >
             <LinkedIn />
             <span>Continue with LinkedIn</span>

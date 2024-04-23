@@ -10,8 +10,8 @@ export default async function OverviewPage() {
     <div>
       <h1 className={title()}>Overview</h1>
 
-      {galleries?.map(gallery => (
-        <GalleryCard name={gallery.name}/>
+      {galleries?.map((gallery, index) => (
+        <GalleryCard key={index} name={gallery.name}/>
       ))}
 
 {galleries?.length === 0 && (
