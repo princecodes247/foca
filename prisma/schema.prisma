@@ -85,6 +85,7 @@ model Gallery {
 model Team {
   id         String      @id @default(cuid())
   name       String
+  slug       String
   users      UserTeam[]
   gallery    Gallery[]
   // folders     Folder[]

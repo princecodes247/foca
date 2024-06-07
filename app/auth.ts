@@ -8,6 +8,7 @@ import { CreateUserEmailProps, CustomUser } from "@/lib/types";
 import { sendWelcomeEmail } from "@/lib/emails/send-welcome";
 // import { identifyUser, trackAnalytics } from "@/lib/analytics";
 import { sendVerificationRequestEmail } from "@/lib/emails/send-verification-request";
+import { convertToSlug } from "@/lib/utils";
 
 const VERCEL_DEPLOYMENT = !!process.env.VERCEL_URL;
 
@@ -18,7 +19,6 @@ export const config = {
 
 export const authOptions = {
 	pages: {
-
 		error: "/login",
 	},
 	providers: [
@@ -27,26 +27,7 @@ export const authOptions = {
 			clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
 			allowDangerousEmailAccountLinking: true,
 		}),
-		LinkedInProvider({
-			clientId: process.env.LINKEDIN_CLIENT_ID as string,
-			clientSecret: process.env.LINKEDIN_CLIENT_SECRET as string,
-			authorization: {
-				params: { scope: "openid profile email" },
-			},
-			issuer: "https://www.linkedin.com",
-			jwks_endpoint: "https://www.linkedin.com/oauth/openid/jwks",
-			profile(profile, tokens) {
-				const defaultImage =
-					"https://cdn-icons-png.flaticon.com/512/174/174857.png";
-				return {
-					id: profile.sub,
-					name: profile.name,
-					email: profile.email,
-					image: profile.picture ?? defaultImage,
-				};
-			},
-			allowDangerousEmailAccountLinking: true,
-		}),
+
 		EmailProvider({
 			async sendVerificationRequest({ identifier, url }) {
 				if (process.env.NODE_ENV === "development") {
@@ -59,7 +40,6 @@ export const authOptions = {
 				});
 			},
 		}),
-			
 	],
 	adapter: PrismaAdapter(prisma),
 	session: { strategy: "jwt" },
@@ -94,10 +74,10 @@ export const authOptions = {
 			};
 			return session;
 		},
-		
 	},
 	events: {
 		async createUser(message) {
+			console.log({ message });
 			const params: CreateUserEmailProps = {
 				user: {
 					name: message.user.name,
@@ -115,7 +95,32 @@ export const authOptions = {
 			await sendWelcomeEmail(params);
 		},
 		async signIn(message) {
-			// await identifyUser(message.user.email ?? message.user.id);
+			console.log({ message });
+			const { user } = message as any as {
+				user: CustomUser;
+				isNewUser?: boolean | undefined;
+			};
+			const userTeams = await prisma.userTeam.findMany({
+				where: {
+					userId: user.id,
+				},
+			});
+			if (userTeams.length === 0) {
+				const teamName = `${user.name} Team`;
+				const newTeam = await prisma.team.create({
+					data: {
+						name: teamName,
+						slug: convertToSlug(teamName),
+					},
+				});
+				const newUserTeam = await prisma.userTeam.create({
+					data: {
+						role: "ADMIN",
+						teamId: newTeam.id,
+						userId: user.id,
+					},
+				});
+			}
 			// await trackAnalytics({
 			// 	event: "User Signed In",
 			// 	email: message.user.email,
@@ -125,4 +130,4 @@ export const authOptions = {
 } satisfies NextAuthOptions;
 
 const handler = NextAuth(authOptions);
-  export { handler as GET, handler as POST };
+export { handler as GET, handler as POST };
