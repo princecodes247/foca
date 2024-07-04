@@ -10,7 +10,6 @@ import {
 	useDisclosure,
 } from "@nextui-org/modal";
 import { Button } from "@nextui-org/button";
-import { createGallery } from "@/app/actions";
 
 // Import React FilePond
 import { FilePond, registerPlugin } from "react-filepond";
@@ -37,9 +36,17 @@ enum SlugStatus {
 	PENDING = "pending",
 }
 
-export default function UploadImagesModal() {
+export default function UploadImagesModal({
+	files,
+	setFiles,
+	submitFn,
+}: {
+	files: Blob[];
+	setFiles: React.Dispatch<React.SetStateAction<Blob[]>>;
+	submitFn: () => Promise<void>;
+}) {
 	const { isOpen, onOpen, onClose } = useDisclosure();
-	const [files, setFiles] = useState<Blob[]>([]);
+	const [isLoading, setIsLoading] = useState(false);
 
 	return (
 		<>
@@ -78,25 +85,23 @@ export default function UploadImagesModal() {
 											}
 											allowMultiple={true}
 											maxFiles={3}
-											server={{
-												process: async (
-													fieldName,
-													file,
-													metadata,
-													load,
-													error,
-													progress,
-													abort,
-													transfer,
-													options,
-												) => {
-													console.log({ file });
-													const formData = new FormData();
-													formData.set("file", file);
-													const { data } = await putFileServer(formData);
-													load(data?.url ?? "");
-												},
-											}}
+											// server={{
+											// 	process: async (
+											// 		fieldName,
+											// 		file,
+											// 		metadata,
+											// 		load,
+											// 		error,
+											// 		progress,
+											// 		abort,
+											// 		transfer,
+											// 		options,
+											// 	) => {
+											// 		console.log({ file });
+											// 		await uploadFn({ file });
+											// 		load("");
+											// 	},
+											// }}
 											name="files" /* sets the file input name, it's filepond by default */
 											labelIdle=""
 											className="min-h-[300px] bg-black/20 mt-2 rounded-lg"
@@ -105,7 +110,14 @@ export default function UploadImagesModal() {
 								</div>
 							</ModalBody>
 							<ModalFooter>
-								<Button color="danger" variant="light" onPress={onClose}>
+								<Button
+									color="danger"
+									variant="light"
+									onPress={() => {
+										setFiles([]);
+										onClose();
+									}}
+								>
 									Close
 								</Button>
 								<Button
@@ -113,11 +125,14 @@ export default function UploadImagesModal() {
 									onPress={async () => {
 										// const res = await createGallery({ name: albumName });
 										// console.log({ res });
+										setIsLoading(true);
+										await submitFn();
+										setIsLoading(false);
 										onClose();
 									}}
-									disabled={false}
+									isLoading={isLoading}
 								>
-									Save
+									{isLoading ? "Uploading..." : "Save"}
 								</Button>
 							</ModalFooter>
 						</>

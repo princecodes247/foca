@@ -11,9 +11,10 @@ import {
 } from "@nextui-org/modal";
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
-import { createGallery } from "@/app/actions";
+
 import { convertToSlug } from "@/lib/utils";
 import useDebounceCallback from "@/hooks/use-debounce-callback";
+import { createGallery } from "@/actions/gallery.actions";
 
 enum SlugStatus {
 	VALID = "valid",

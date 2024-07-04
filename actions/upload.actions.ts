@@ -15,9 +15,13 @@ export const putFileServer = async (formData: FormData) => {
     file: formData.get("file"),
   };
   const { data } = await match(NEXT_PUBLIC_UPLOAD_TRANSPORT)
-    .with("cloudinary", async () =>
-      putFileInCloudinaryServer({ file: rawFormData.file as File })
-    )
+    .with("cloudinary", async () => {
+      if (!(rawFormData?.file instanceof File))
+        return {
+          data: null,
+        };
+      return putFileInCloudinaryServer({ file: rawFormData.file });
+    })
     .otherwise(() => {
       return {
         data: null,
@@ -27,7 +31,7 @@ export const putFileServer = async (formData: FormData) => {
   return { data };
 };
 
-const putFileInCloudinaryServer = async ({
+export const putFileInCloudinaryServer = async ({
   file,
   photoId,
 }: {
@@ -65,6 +69,105 @@ const putFileInCloudinaryServer = async ({
         public_id: result.public_id,
       },
     };
+  } catch (error) {
+    console.error("Error uploading file to Cloudinary", error);
+    throw error;
+  }
+};
+
+export const putFilesServer = async (formData: FormData) => {
+  const NEXT_PUBLIC_UPLOAD_TRANSPORT = process.env.NEXT_PUBLIC_UPLOAD_TRANSPORT;
+
+  // Extract files from the FormData
+  const files: File[] = [];
+  formData.forEach((value, key) => {
+    if (key === "files[]" && value instanceof File) {
+      files.push(value);
+    }
+  });
+
+  const { data } = await match(NEXT_PUBLIC_UPLOAD_TRANSPORT)
+    .with("cloudinary", async () => {
+      if (files.length === 0) {
+        return {
+          data: null,
+        };
+      }
+      return putFilesInCloudinaryServer({ files });
+    })
+    .otherwise(() => {
+      return {
+        data: null,
+      };
+    });
+
+  return { data };
+};
+
+export const putFilesInCloudinaryServer = async ({
+  files,
+  photoId,
+}: {
+  files: File[];
+  photoId?: string;
+}) => {
+  const client = getCloudinaryClient();
+
+  const uploadResults = await Promise.all(
+    files.map(async (file) => {
+      let currentPhotoId = photoId;
+      if (!currentPhotoId) {
+        currentPhotoId = newId("photo");
+      }
+
+      const { name, ext } = path.parse(file.name);
+      const key = `${currentPhotoId}-${convertToSlug(name)}`;
+
+      const buffer = Buffer.from(await file.arrayBuffer());
+      const base64data = buffer.toString("base64");
+
+      console.log({ key, ext });
+
+      try {
+        const result = await client.uploader.upload(
+          `data:image/${ext.slice(1)};base64,${base64data}`,
+          {
+            public_id: key,
+            resource_type: "auto",
+            folder: "albums",
+            // Add more options as needed
+          }
+        );
+
+        console.log("Upload successful", result);
+        return {
+          url: result.secure_url,
+          public_id: result.public_id,
+        };
+      } catch (error) {
+        console.error("Error uploading file to Cloudinary", error);
+        throw error;
+      }
+    })
+  );
+
+  return {
+    data: uploadResults,
+  };
+};
+
+export const removeFileFromCloudinaryServer = async ({
+  photoId,
+}: {
+  photoId: string;
+}) => {
+  const client = getCloudinaryClient();
+
+  try {
+    const result = await client.uploader.destroy(photoId);
+
+    console.log("File removed successfully", result);
+    return true;
   } catch (error) {
     console.error("Error uploading file to Cloudinary", error);
     throw error;

@@ -29,28 +29,7 @@ import {
 
 import { Logo } from "@/components/icons";
 
-export const Navbar = () => {
-	const searchInput = (
-		<Input
-			aria-label="Search"
-			classNames={{
-				inputWrapper: "bg-default-100",
-				input: "text-sm",
-			}}
-			endContent={
-				<Kbd className="hidden lg:inline-block" keys={["command"]}>
-					K
-				</Kbd>
-			}
-			labelPlacement="outside"
-			placeholder="Search..."
-			startContent={
-				<SearchIcon className="flex-shrink-0 text-base pointer-events-none text-default-400" />
-			}
-			type="search"
-		/>
-	);
-
+export const AppNavbar = () => {
 	return (
 		<NextUINavbar maxWidth="xl" position="sticky">
 			<NavbarContent className="basis-1/5 sm:basis-full" justify="start">
@@ -83,15 +62,6 @@ export const Navbar = () => {
 				justify="end"
 			>
 				<NavbarItem className="hidden gap-2 sm:flex">
-					<Link isExternal href={siteConfig.links.twitter} aria-label="Twitter">
-						<TwitterIcon className="text-default-500" />
-					</Link>
-					<Link isExternal href={siteConfig.links.discord} aria-label="Discord">
-						<DiscordIcon className="text-default-500" />
-					</Link>
-					<Link isExternal href={siteConfig.links.github} aria-label="Github">
-						<GithubIcon className="text-default-500" />
-					</Link>
 					<ThemeSwitch />
 				</NavbarItem>
 			</NavbarContent>
@@ -105,7 +75,6 @@ export const Navbar = () => {
 			</NavbarContent>
 
 			<NavbarMenu>
-				{searchInput}
 				<div className="flex flex-col gap-2 mx-4 mt-2">
 					{siteConfig.navMenuItems.map((item, index) => (
 						<NavbarMenuItem key={`${item}-${index}`}>

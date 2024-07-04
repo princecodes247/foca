@@ -59,27 +59,43 @@ enum GalleryLockMode {
 }
 
 model Gallery {
-  id              String   @id @default(cuid())
-  name            String?
-  slug            String?  @unique
-  coverImage      String?
-  coverImageFocus String?
-  images          String[] @default([])
-  theme           String?
-  createdAt       DateTime @default(now())
+  id        String   @id @default(cuid())
+  name      String?
+  slug      String?  @unique
+  images    Image[]
+  theme     String?
+  createdAt DateTime @default(now())
 
   lockMode  GalleryLockMode @default(NONE)
   // Security
   password  String?
   emailList String[]
 
+  views Int @default(0)
+
   // domains        Domain[]
   eventDate   DateTime? // Event start date
   expDate     DateTime? // Gallery expiration date
-  isPublished Boolean   @default(false)
+  isPublished Boolean   @default(true)
   willExpire  Boolean   @default(true)
   Team        Team?     @relation(fields: [teamId], references: [id])
   teamId      String?
+}
+
+model Image {
+  id              String   @id @default(cuid())
+  public_id       String?
+  url             String
+  order           Int      @default(1)
+  isCoverImage    Boolean?
+  coverImageFocus String?
+  views           Int      @default(0)
+  likes           Int      @default(0)
+  downloads       Int      @default(0)
+  isHidden        Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  Gallery         Gallery? @relation(fields: [galleryId], references: [id])
+  galleryId       String?
 }
 
 model Team {

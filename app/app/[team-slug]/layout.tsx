@@ -12,7 +12,7 @@ export default async function DashboardLayout({
 	return (
 		<>
 			{/* <p>{session.user}</p> */}
-			<p>{session?.user?.name}</p>
+			{/* <p>{session?.user?.name}</p> */}
 			{children}
 		</>
 	);
