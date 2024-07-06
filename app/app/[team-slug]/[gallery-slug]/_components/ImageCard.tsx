@@ -121,4 +121,6 @@ const ImageCard = forwardRef<HTMLLabelElement, ImageCardProps>(
 	},
 );
 
+ImageCard.displayName = "ImageCard";
+
 export default ImageCard;

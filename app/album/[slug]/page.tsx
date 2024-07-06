@@ -6,10 +6,13 @@ export default async function SingleGalleryPage({
 }: {
 	params: { slug: string };
 }) {
-	const gallery = await prisma?.gallery.findFirst({
+	const gallery = await prisma?.gallery.update({
 		where: {
 			slug: params?.slug,
 			isPublished: true,
+		},
+		data: {
+			views: { increment: 1 },
 		},
 		include: {
 			images: true,
@@ -17,10 +20,6 @@ export default async function SingleGalleryPage({
 	});
 
 	if (!gallery) return notFound();
-	await prisma?.gallery.update({
-		where: { id: gallery.id },
-		data: { views: { increment: 1 } },
-	});
 
 	return <AlbumPage gallery={gallery} />;
 }

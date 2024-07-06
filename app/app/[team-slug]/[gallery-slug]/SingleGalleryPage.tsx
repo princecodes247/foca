@@ -31,9 +31,9 @@ export default function SingleGalleryPage({
 }: {
 	gallery: GalleryWithImages;
 }) {
-	if (!gallery) return;
+	// if (!gallery) return;
 	const [files, setFiles] = useState<Blob[]>([]);
-	const [isPublished, setIsPublished] = useState(gallery.isPublished ?? false);
+	const [isPublished, setIsPublished] = useState(gallery?.isPublished ?? false);
 	const router = useRouter();
 	const [images, setImages] = useState(
 		gallery?.images.sort(

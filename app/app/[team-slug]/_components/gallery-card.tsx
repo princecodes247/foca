@@ -1,9 +1,14 @@
+import { GalleryWithImages } from "@/types";
 import { Card, CardBody } from "@nextui-org/card";
-import { Gallery } from "@prisma/client";
+import { Image } from "@prisma/client";
 import Link from "next/link";
 import React from "react";
 
-export default function GalleryCard({ name, images, slug }: Partial<Gallery>) {
+export default function GalleryCard({ name, images, slug }: {
+	name: string;
+	images: Image[];
+	slug: string;
+}) {
 	return (
 		<Link href={`./${slug}`}>
 			<Card isPressable>

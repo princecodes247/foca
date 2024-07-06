@@ -24,10 +24,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
 	children,
-	modal
 }: {
 	children: React.ReactNode;
-	modal: React.ReactNode;
 
 }) {
 	return (
@@ -41,7 +39,6 @@ export default function RootLayout({
 			>
 				<Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
 					{children}
-					{modal}
 				</Providers>
 			</body>
 		</html>

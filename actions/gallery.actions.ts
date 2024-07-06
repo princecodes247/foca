@@ -266,3 +266,22 @@ export async function deleteGallery(id: string) {
 
   return gallery;
 }
+
+export async function updateImageViews(imageId: string) {
+  const updatedImage = await prisma?.image.update({
+    where: {
+      id: imageId,
+    },
+    data: {
+      views: {
+        increment: 1,
+      },
+    },
+  });
+
+  if (!updatedImage) {
+    throw new Error("Image not found");
+  }
+
+  return updatedImage;
+}

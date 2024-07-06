@@ -9,7 +9,14 @@ export default async function OverviewPage({
 }: {
 	params: { "team-slug": string };
 }) {
-	const galleries = (await prisma?.gallery.findMany()) ?? [];
+	const galleries = (await prisma?.gallery.findMany({
+		where: {
+			teamId: params["team-slug"],
+		},
+		include: {
+			images: true,
+		},
+	})) ?? [];
 	console.log({ galleries, params });
 	return (
 		<div>
@@ -21,9 +28,9 @@ export default async function OverviewPage({
 				{galleries?.map((gallery, index) => (
 					<GalleryCard
 						key={index}
-						name={gallery.name}
-						slug={`${params["team-slug"]}/${gallery.slug}`}
-						images={gallery.images}
+						name={gallery?.name ?? ""}
+						slug={`${params["team-slug"]}/${gallery?.slug ?? ""}`}
+						images={gallery?.images ?? []}
 					/>
 				))}
 			</div>
